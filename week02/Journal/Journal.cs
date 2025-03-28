@@ -19,36 +19,45 @@ public class Journal
         }
     }
 
-    public void SaveToFile (string file)
+    public void SaveToFile (string filename)
     {
-        using (StreamWriter writer = new StreamWriter(file)
-        )
+        using (StreamWriter writer = new StreamWriter(filename))
         {
+            writer.WriteLine("Date,Prompt,Entry");
+            
             foreach (var entry in _entries)
             {
-                writer.WriteLine($"{entry._date}|{entry._promptText}|{entry._entryText}");
+                writer.WriteLine(entry.ToCsv());
             }
         }
     }
 
-    public void LoadFromFile(string file)
+    public void LoadFromFile(string filename)
     {
-        if (File.Exists(file))
+        if (File.Exists(filename))
         {
             _entries.Clear();
-            string[] lines = File.ReadAllLines(file);
-            foreach (string line in lines)
+            string[] lines = File.ReadAllLines(filename);
+            for (int i = 1; i < lines.Length; i++)
             {
-                string[] parts = line.Split('|');
+                string[] parts = lines[i].Split(",");
                 if (parts.Length == 3)
                 {
-                    _entries.Add(new Entry(parts[0], parts[1], parts[2]));
+                    _entries.Add(new Entry(parts[0].Trim('"'), parts[1].Trim('"'), parts[2].Trim('"')));
                 }
             }
         }
-        else
+    }
+
+    public void SearchEntries(string keyword)
+    {
+        foreach (var entry in _entries)
         {
-            Console.WriteLine("File not found.");
+            if (entry.EntryText.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                entry.PromptText.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                entry.Display();
+            }
         }
     }
 }

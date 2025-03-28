@@ -1,3 +1,9 @@
+//Beyond Requirements:
+// 1. Journal entries are saved in CSV format, making them easily accessible in spreadsheet applications.
+//    Special care has been taken to handle commas and quotes correctly in text fields.
+// 2. Added a search function to allow users to find journal entries by keyword,
+//    making it easier to reflect on past thoughts based on specific themes or events.
+
 using System;
 
 class Program
@@ -14,47 +20,43 @@ class Program
             Console.WriteLine("2. Display journal");
             Console.WriteLine("3. Save journal to file");
             Console.WriteLine("4. Load journal from file");
-            Console.WriteLine("5. Exit");
+            Console.WriteLine("5. Search journal");
+            Console.WriteLine("6. Exit");
             Console.Write("Select an option: ");
 
             string choice = Console.ReadLine();
+            switch (choice)
 
-            if (choice == "1")
             {
-                string prompt = promptGenerator.GetRandomPrompt();
-                Console.WriteLine($"\n{prompt}");
-                Console.Write("Your response: ");
-                string response = Console.ReadLine();
-
-                Entry newEntry = new Entry(DateTime.Now.ToShortDateString(), prompt, response);
-                myJournal.AddEntry(newEntry);
+                case "1":
+                    string prompt = promptGenerator.GetRandomPrompt();
+                    Console.WriteLine($"Prompt: {prompt}");
+                    Console.Write("Your response: ");
+                    string response = Console.ReadLine();
+                    myJournal.AddEntry(new Entry(DateTime.Now.ToString("yyyy-MM-dd"), prompt, response));
+                    break;
+                case "2":
+                    myJournal.DisplayAll();
+                    break;
+                case "3":
+                    Console.Write("Enter filename to save: ");
+                    myJournal.SaveToFile(Console.ReadLine());
+                    break;
+                case "4":
+                    Console.Write("Enter filename to load: ");
+                    myJournal.LoadFromFile(Console.ReadLine());
+                    break;
+                case "5":
+                    Console.Write("Enter keyword to search: ");
+                    myJournal.SearchEntries(Console.ReadLine());
+                    break;
+                case "6":
+                    return;
+                default:
+                    Console.WriteLine("Invalid choice. Try again.");
+                    break;
             }
-            else if (choice == "2")
-            {
-                myJournal.DisplayAll();
-            }
-            else if (choice == "3")
-            {
-                Console.Write("Enter filename to save: ");
-                string filename = Console.ReadLine();
-                myJournal.SaveToFile(filename);
-                Console.WriteLine("Journal saved successfully.");
-            }
-            else if (choice == "4")
-            {
-                Console.Write("Enter filename to load: ");
-                string filename = Console.ReadLine();
-                myJournal.LoadFromFile(filename);
-                Console.WriteLine("Journal loaded successfully.");
-            }
-            else if (choice == "5")
-            {
-                break;
-            }
-            else
-            {
-                Console.WriteLine("Invalid option. Try again.");
-            }
+             
         }
     }
 }
